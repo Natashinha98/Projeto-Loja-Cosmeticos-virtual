@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lojinha de Cosméticos</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fff7fb; margin: 0; color: #2e1d27; }
+    header { background: #d96ba7; color: white; padding: 24px; text-align: center; }
+    main { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+    section { background: white; border-radius: 14px; padding: 18px; margin-bottom: 18px; box-shadow: 0 4px 14px #0001; }
+    input, button { padding: 10px; margin: 4px; border-radius: 8px; border: 1px solid #ddd; }
+    button { background: #d96ba7; color: white; border: 0; cursor: pointer; }
+    pre { background: #f6eef3; padding: 12px; border-radius: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lojinha Virtual de Cosméticos</h1>
+    <p>Telinha simples chamando o backend em Python</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Clientes - PostgreSQL</h2>
+      <input id="nomeCliente" placeholder="Nome" />
+      <input id="emailCliente" placeholder="E-mail" />
+      <input id="telefoneCliente" placeholder="Telefone" />
+      <button onclick="cadastrarCliente()">Cadastrar cliente</button>
+      <button onclick="mostrarClientes()">Ver clientes</button>
+      <pre id="resultadoClientes"></pre>
+    </section>
+
+    <section>
+      <h2>Produtos - MongoDB com Redis</h2>
+      <input id="nomeProduto" placeholder="Nome" />
+      <input id="marcaProduto" placeholder="Marca" />
+      <input id="categoriaProduto" placeholder="Categoria" />
+      <input id="precoProduto" placeholder="Preço" type="number" step="0.01" />
+      <input id="estoqueProduto" placeholder="Estoque" type="number" />
+      <button onclick="cadastrarProduto()">Cadastrar produto</button>
+      <button onclick="mostrarProdutos()">Ver produtos</button>
+      <pre id="resultadoProdutos"></pre>
+    </section>
+
+    <section>
+      <h2>Pedidos - PostgreSQL + MongoDB</h2>
+      <p>Use um id_cliente e um id de produto que já exista.</p>
+      <input id="idClientePedido" placeholder="id_cliente" type="number" />
+      <input id="idProdutoPedido" placeholder="id_produto MongoDB" />
+      <input id="quantidadePedido" placeholder="Quantidade" type="number" />
+      <button onclick="cadastrarPedido()">Cadastrar pedido</button>
+      <button onclick="mostrarPedidos()">Ver pedidos</button>
+      <pre id="resultadoPedidos"></pre>
+    </section>
+  </main>
+
+  <script>
+    const API = "http://localhost:8000";
+
+    function colocarNaTela(id, dados) {
+      document.getElementById(id).textContent = JSON.stringify(dados, null, 2);
+    }
+
+    async function cadastrarCliente() {
+      const resposta = await fetch(`${API}/clientes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: nomeCliente.value,
+          email: emailCliente.value,
+          telefone: telefoneCliente.value
+        })
+      });
+      colocarNaTela("resultadoClientes", await resposta.json());
+    }
+
+    async function mostrarClientes() {
+      const resposta = await fetch(`${API}/clientes`);
+      colocarNaTela("resultadoClientes", await resposta.json());
+    }
+
+    async function cadastrarProduto() {
+      const resposta = await fetch(`${API}/produtos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: nomeProduto.value,
+          marca: marcaProduto.value,
+          categoria: categoriaProduto.value,
+          preco: Number(precoProduto.value),
+          estoque: Number(estoqueProduto.value),
+          descricao: "Produto cadastrado pela telinha",
+          ingredientes: [],
+          tipo_pele: "todos"
+        })
+      });
+      colocarNaTela("resultadoProdutos", await resposta.json());
+    }
+
+    async function mostrarProdutos() {
+      const resposta = await fetch(`${API}/produtos`);
+      colocarNaTela("resultadoProdutos", await resposta.json());
+    }
+
+    async function cadastrarPedido() {
+      const resposta = await fetch(`${API}/pedidos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_cliente: Number(idClientePedido.value),
+          id_produto: idProdutoPedido.value,
+          quantidade: Number(quantidadePedido.value)
+        })
+      });
+      colocarNaTela("resultadoPedidos", await resposta.json());
+    }
+
+    async function mostrarPedidos() {
+      const resposta = await fetch(`${API}/pedidos`);
+      colocarNaTela("resultadoPedidos", await resposta.json());
+    }
+  </script>
+</body>
+</html>
