@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: banco_postgres_loja
+    environment:
+      POSTGRES_DB: loja_cosmeticos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dados:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:7
+    container_name: banco_mongo_loja
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_dados:/data/db
+
+  redis:
+    image: redis:7
+    container_name: banco_redis_loja
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dados:/data
+
+volumes:
+  postgres_dados:
+  mongo_dados:
+  redis_dados:
